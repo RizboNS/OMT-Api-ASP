@@ -23,6 +23,9 @@ namespace OMT_Api.Entities
         public string EmployeeId { get; set; }
 
         [Required]
+        public DateTime Created { get; set; }
+
+        [Required]
         public Role Role { get; set; }
     }
 
