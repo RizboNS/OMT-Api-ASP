@@ -53,5 +53,20 @@ namespace OMT_Api.Controllers
 
             return Ok();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var EmployeeToDelete = await _context.Employees.FindAsync(id);
+            if (EmployeeToDelete == null)
+            {
+                return NotFound();
+            }
+
+            _context.Employees.Remove(EmployeeToDelete);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
