@@ -7,4 +7,8 @@
     <RootNamespace>OMT_Api</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>
