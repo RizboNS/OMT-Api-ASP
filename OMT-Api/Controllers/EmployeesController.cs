@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OMT_Api.Data;
@@ -31,6 +32,26 @@ namespace OMT_Api.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetById), new { id = employee.Id }, employee);
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] JsonPatchDocument<Employee> employeeDoc)
+        {
+            if (employeeDoc == null)
+            {
+                return BadRequest();
+            }
+
+            var employee = await _context.Employees.FindAsync(id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            employeeDoc.ApplyTo(employee);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }
