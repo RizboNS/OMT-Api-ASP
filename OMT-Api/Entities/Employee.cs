@@ -16,14 +16,13 @@ namespace OMT_Api.Entities
         [Required, MaxLength(50)]
         public string Email { get; set; } = string.Empty;
 
-        [Required, MinLength(6), MaxLength(50)]
-        public string Password { get; set; } = string.Empty;
+        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordSalt { get; set; }
 
         [Required, MinLength(8), MaxLength(8)]
         public string EmployeeId { get; set; } = string.Empty;
 
-        [Required]
-        public DateTime Created { get; set; }
+        public DateTime Created { get; set; } = DateTime.Now;
 
         [Required]
         public Role Role { get; set; }

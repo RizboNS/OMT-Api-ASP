@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OMT_Api.Data;
 using OMT_Api.Entities;
+using OMT_Api.Models;
+using System.Security.Cryptography;
 
 namespace OMT_Api.Controllers
 {
@@ -26,8 +28,19 @@ namespace OMT_Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Employee employee)
+        public async Task<IActionResult> Create(EmployeeAuth employeeAuth)
         {
+            CreatePasswordHash(employeeAuth.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            var employee = new Employee();
+            employee.FirstName = employeeAuth.FirstName;
+            employee.LastName = employeeAuth.LastName;
+            employee.Email = employeeAuth.Email;
+            employee.EmployeeId = employeeAuth.EmployeeId;
+            employee.Role = employeeAuth.Role;
+            employee.PasswordHash = passwordHash;
+            employee.PasswordSalt = passwordSalt;
+
             await _context.Employees.AddAsync(employee);
             await _context.SaveChangesAsync();
 
@@ -67,6 +80,15 @@ namespace OMT_Api.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
         }
     }
 }
