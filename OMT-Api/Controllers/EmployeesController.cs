@@ -2,9 +2,12 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using OMT_Api.Data;
 using OMT_Api.Entities;
 using OMT_Api.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 
 namespace OMT_Api.Controllers
@@ -14,8 +17,13 @@ namespace OMT_Api.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly EmployeeDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public EmployeesController(EmployeeDbContext context) => _context = context;
+        public EmployeesController(EmployeeDbContext context, IConfiguration configuration)
+        {
+            _context = context;
+            _configuration = configuration;
+        }
 
         [HttpGet]
         public async Task<IEnumerable<Employee>> Get() => await _context.Employees.ToListAsync();
@@ -59,8 +67,8 @@ namespace OMT_Api.Controllers
             {
                 return BadRequest();
             }
-
-            return Ok("TOKEN: LOGGED IN");
+            string token = CreateToken(employee);
+            return Ok(token);
         }
 
         [HttpPatch("{id}")]
@@ -114,6 +122,27 @@ namespace OMT_Api.Controllers
                 var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
                 return computedHash.SequenceEqual(passwordHash);
             }
+        }
+
+        private string CreateToken(Employee employee)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, $"{employee.FirstName} {employee.LastName}")
+            };
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
+                _configuration.GetSection("AppSettings:Token").Value));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: creds
+                );
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return jwt;
         }
     }
 }
