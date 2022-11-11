@@ -47,6 +47,22 @@ namespace OMT_Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id = employee.Id }, employee);
         }
 
+        [HttpPost("login")]
+        public async Task<ActionResult<string>> Login(EmployeeLoginDto employeeLoginDto)
+        {
+            var employee = await _context.Employees.FirstOrDefaultAsync(a => a.EmployeeId == employeeLoginDto.EmployeeId);
+            if (employee == null)
+            {
+                return BadRequest();
+            }
+            if (!VerifyPasswordHash(employeeLoginDto.Password, employee.PasswordHash, employee.PasswordSalt))
+            {
+                return BadRequest();
+            }
+
+            return Ok("TOKEN: LOGGED IN");
+        }
+
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] JsonPatchDocument<Employee> employeeDoc)
         {
@@ -88,6 +104,15 @@ namespace OMT_Api.Controllers
             {
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
+        }
+
+        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512(passwordSalt))
+            {
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                return computedHash.SequenceEqual(passwordHash);
             }
         }
     }
