@@ -44,13 +44,6 @@ namespace OMT_Api.Controllers
         {
             _authService.CreatePasswordHash(employeeRegisterDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            //var employee = new Employee();
-            //employee.FirstName = employeeRegisterDto.FirstName;
-            //employee.LastName = employeeRegisterDto.LastName;
-            //employee.Email = employeeRegisterDto.Email;
-            //employee.EmployeeId = employeeRegisterDto.EmployeeId;
-            //employee.Role = employeeRegisterDto.Role;
-
             var employee = _mapper.Map<Employee>(employeeRegisterDto);
 
             employee.PasswordHash = passwordHash;
@@ -59,7 +52,7 @@ namespace OMT_Api.Controllers
             await _context.Employees.AddAsync(employee);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = employee.Id }, employee);
+            return CreatedAtAction(nameof(GetById), new { id = employee.Id }, _mapper.Map<EmployeeResponseDto>(employee));
         }
 
         [HttpPost("login")]

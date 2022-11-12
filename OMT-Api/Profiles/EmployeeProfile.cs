@@ -9,6 +9,7 @@ namespace OMT_Api.Profiles
         public EmployeeProfile()
         {
             CreateMap<EmployeeRegisterDto, Employee>();
+            CreateMap<Employee, EmployeeResponseDto>();
         }
     }
 }
