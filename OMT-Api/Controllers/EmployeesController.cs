@@ -1,16 +1,12 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using OMT_Api.Data;
 using OMT_Api.Entities;
 using OMT_Api.Models;
 using OMT_Api.Services;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
 
 namespace OMT_Api.Controllers
 {
@@ -18,6 +14,8 @@ namespace OMT_Api.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
+        //TO DO Method for a Employee to change password.
+
         private readonly EmployeeDbContext _context;
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
@@ -29,17 +27,17 @@ namespace OMT_Api.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "admin")]
         public async Task<IEnumerable<Employee>> Get() => await _context.Employees.ToListAsync();
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize(Roles = "admin")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var employee = await _context.Employees.FindAsync(id);
             return employee == null ? NotFound() : Ok(_mapper.Map<EmployeeResponseDto>(employee));
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "admin")]
         public async Task<IActionResult> Create(EmployeeRegisterDto employeeRegisterDto)
         {
             _authService.CreatePasswordHash(employeeRegisterDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -71,7 +69,7 @@ namespace OMT_Api.Controllers
             return Ok(token);
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}"), Authorize(Roles = "admin")]
         public async Task<IActionResult> Update(Guid id, [FromBody] JsonPatchDocument<Employee> employeeDoc)
         {
             if (employeeDoc == null)
@@ -88,10 +86,10 @@ namespace OMT_Api.Controllers
             employeeDoc.ApplyTo(employee);
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var EmployeeToDelete = await _context.Employees.FindAsync(id);

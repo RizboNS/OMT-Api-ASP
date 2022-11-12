@@ -37,7 +37,8 @@ namespace OMT_Api.Services
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, $"{employee.FirstName} {employee.LastName}")
+                new Claim(ClaimTypes.Name, $"{employee.FirstName} {employee.LastName}"),
+                new Claim(ClaimTypes.Role, employee.Role.ToString())
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
@@ -46,9 +47,10 @@ namespace OMT_Api.Services
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.Now.AddHours(9),
                 signingCredentials: creds
                 );
+
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
             return jwt;
