@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +20,13 @@ namespace OMT_Api.Controllers
     {
         private readonly EmployeeDbContext _context;
         private readonly IAuthService _authService;
+        private readonly IMapper _mapper;
 
-        public EmployeesController(EmployeeDbContext context, IAuthService authService)
+        public EmployeesController(EmployeeDbContext context, IAuthService authService, IMapper mapper)
         {
             _context = context;
             _authService = authService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -37,16 +40,19 @@ namespace OMT_Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(EmployeeAuth employeeAuth)
+        public async Task<IActionResult> Create(EmployeeRegisterDto employeeRegisterDto)
         {
-            _authService.CreatePasswordHash(employeeAuth.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            _authService.CreatePasswordHash(employeeRegisterDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            var employee = new Employee();
-            employee.FirstName = employeeAuth.FirstName;
-            employee.LastName = employeeAuth.LastName;
-            employee.Email = employeeAuth.Email;
-            employee.EmployeeId = employeeAuth.EmployeeId;
-            employee.Role = employeeAuth.Role;
+            //var employee = new Employee();
+            //employee.FirstName = employeeRegisterDto.FirstName;
+            //employee.LastName = employeeRegisterDto.LastName;
+            //employee.Email = employeeRegisterDto.Email;
+            //employee.EmployeeId = employeeRegisterDto.EmployeeId;
+            //employee.Role = employeeRegisterDto.Role;
+
+            var employee = _mapper.Map<Employee>(employeeRegisterDto);
+
             employee.PasswordHash = passwordHash;
             employee.PasswordSalt = passwordSalt;
 
