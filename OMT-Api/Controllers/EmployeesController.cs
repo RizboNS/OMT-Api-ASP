@@ -35,8 +35,8 @@ namespace OMT_Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var Employee = await _context.Employees.FindAsync(id);
-            return Employee == null ? NotFound() : Ok(Employee);
+            var employee = await _context.Employees.FindAsync(id);
+            return employee == null ? NotFound() : Ok(_mapper.Map<EmployeeResponseDto>(employee));
         }
 
         [HttpPost]
