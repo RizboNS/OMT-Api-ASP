@@ -10,6 +10,6 @@ namespace OMT_Api.Models
         public string EmployeeId { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public DateTime Created { get; set; }
-        public Role Role { get; set; }
+        public string Role { get; set; } = string.Empty;
     }
 }

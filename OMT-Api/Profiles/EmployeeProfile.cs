@@ -8,7 +8,6 @@ namespace OMT_Api.Profiles
     {
         public EmployeeProfile()
         {
-            //TO DO MAP ENUM TO STRING LINE 17
             CreateMap<EmployeeRegisterDto, Employee>();
             CreateMap<Employee, EmployeeResponseDto>()
                 .ForMember(
