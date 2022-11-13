@@ -7,6 +7,8 @@ using OMT_Api.Data;
 using OMT_Api.Entities;
 using OMT_Api.Models;
 using OMT_Api.Services;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace OMT_Api.Controllers
 {
@@ -14,8 +16,6 @@ namespace OMT_Api.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-        //TO DO Method for a Employee to change password.
-
         private readonly EmployeeDbContext _context;
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
@@ -87,6 +87,18 @@ namespace OMT_Api.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpPatch("change-password/{id}")]
+        public async Task<IActionResult> ChangePassword(Guid id)
+        {
+            //TO DO Finish change password, from body new password only allowed field to change is password. additionally check if old password match
+            var idFromToken = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (idFromToken != id.ToString())
+            {
+                return Unauthorized();
+            }
+            return Ok(idFromToken);
         }
 
         [HttpDelete("{id}"), Authorize(Roles = "admin")]

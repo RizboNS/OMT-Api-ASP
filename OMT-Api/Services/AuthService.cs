@@ -38,7 +38,8 @@ namespace OMT_Api.Services
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, $"{employee.FirstName} {employee.LastName}"),
-                new Claim(ClaimTypes.Role, employee.Role.ToString())
+                new Claim(ClaimTypes.Role, employee.Role.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, employee.Id.ToString())
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
