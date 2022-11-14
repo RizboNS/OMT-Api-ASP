@@ -90,15 +90,35 @@ namespace OMT_Api.Controllers
         }
 
         [HttpPatch("change-password/{id}")]
-        public async Task<IActionResult> ChangePassword(Guid id)
+        public async Task<IActionResult> ChangePassword(Guid id, [FromBody] EmployeeChangePasswordDto request)
         {
-            //TO DO Finish change password, from body new password only allowed field to change is password. additionally check if old password match
             var idFromToken = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (idFromToken != id.ToString())
             {
                 return Unauthorized();
             }
-            return Ok(idFromToken);
+
+            if (request.newPassword == request.oldPassword)
+            {
+                return BadRequest("New and Old password can't match.");
+            }
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            if (!_authService.VerifyPasswordHash(request.oldPassword, employee.PasswordHash, employee.PasswordSalt))
+            {
+                return BadRequest("Wrong password");
+            }
+            _authService.CreatePasswordHash(request.newPassword, out byte[] passwordHash, out byte[] passwordSalt);
+            employee.PasswordHash = passwordHash;
+            employee.PasswordSalt = passwordSalt;
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         [HttpDelete("{id}"), Authorize(Roles = "admin")]
