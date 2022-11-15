@@ -13,10 +13,10 @@ namespace OMT_Api.Entities
         [Required, MaxLength(50)]
         public string LastName { get; set; } = string.Empty;
 
-        [Required, MaxLength(50)]
+        [Required, EmailAddress, MaxLength(50)]
         public string Email { get; set; } = string.Empty;
 
-        [Required, MaxLength(10)]
+        [Required, Phone]
         public string Phone { get; set; } = string.Empty;
 
         [Required, MaxLength(50)]
@@ -30,5 +30,7 @@ namespace OMT_Api.Entities
 
         [Required, MaxLength(5)]
         public string Zip { get; set; } = string.Empty;
+
+        public DateTime Created { get; set; } = DateTime.Now;
     }
 }

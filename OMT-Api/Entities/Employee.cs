@@ -13,7 +13,7 @@ namespace OMT_Api.Entities
         [Required, MaxLength(50)]
         public string LastName { get; set; } = string.Empty;
 
-        [Required, MaxLength(50)]
+        [Required, EmailAddress, MaxLength(50)]
         public string Email { get; set; } = string.Empty;
 
         public byte[] PasswordHash { get; set; }
