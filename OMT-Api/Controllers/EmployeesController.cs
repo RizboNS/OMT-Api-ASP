@@ -27,10 +27,10 @@ namespace OMT_Api.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet, Authorize(Roles = "admin")]
+        [HttpGet, Authorize]
         public async Task<IEnumerable<Employee>> Get() => await _context.Employees.ToListAsync();
 
-        [HttpGet("{id}"), Authorize(Roles = "admin")]
+        [HttpGet("{id}"), Authorize]
         public async Task<IActionResult> GetById(Guid id)
         {
             var employee = await _context.Employees.FindAsync(id);
