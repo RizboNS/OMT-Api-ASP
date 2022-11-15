@@ -25,7 +25,7 @@ builder.Services.AddAuthentication(
             ValidateAudience = false
         };
     });
-builder.Services.AddDbContext<EmployeeDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+builder.Services.AddDbContext<OmtDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
 var app = builder.Build();
 

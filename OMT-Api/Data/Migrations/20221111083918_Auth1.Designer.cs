@@ -11,7 +11,7 @@ using OMT_Api.Data;
 
 namespace OMT_Api.Data.Migrations
 {
-    [DbContext(typeof(EmployeeDbContext))]
+    [DbContext(typeof(OmtDbContext))]
     [Migration("20221111083918_Auth1")]
     partial class Auth1
     {

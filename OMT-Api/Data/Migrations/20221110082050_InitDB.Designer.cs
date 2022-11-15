@@ -11,7 +11,7 @@ using OMT_Api.Data;
 
 namespace OMT_Api.Data.Migrations
 {
-    [DbContext(typeof(EmployeeDbContext))]
+    [DbContext(typeof(OmtDbContext))]
     [Migration("20221110082050_InitDB")]
     partial class InitDB
     {

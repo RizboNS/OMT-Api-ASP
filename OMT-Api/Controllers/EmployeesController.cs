@@ -16,11 +16,11 @@ namespace OMT_Api.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-        private readonly EmployeeDbContext _context;
+        private readonly OmtDbContext _context;
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
 
-        public EmployeesController(EmployeeDbContext context, IAuthService authService, IMapper mapper)
+        public EmployeesController(OmtDbContext context, IAuthService authService, IMapper mapper)
         {
             _context = context;
             _authService = authService;
