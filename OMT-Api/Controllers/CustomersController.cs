@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OMT_Api.Data;
 using OMT_Api.Entities;
 
@@ -20,17 +21,22 @@ namespace OMT_Api.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet, Authorize]
+        public async Task<IEnumerable<Customer>> Get() => await _context.Customers.ToListAsync();
+
+        [HttpGet("{id}"), Authorize]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var customer = await _context.Customers.FindAsync(id);
+            return customer == null ? NotFound() : Ok(customer);
+        }
+
         [HttpPost, Authorize]
         public async Task<IActionResult> Create(Customer customer)
         {
-            if (customer == null)
-            {
-                return BadRequest();
-            }
-
             await _context.Customers.AddAsync(customer);
             await _context.SaveChangesAsync();
-            return Ok();
+            return customer == null ? BadRequest() : CreatedAtAction(nameof(GetById), new { id = customer.Id }, customer);
         }
     }
 }

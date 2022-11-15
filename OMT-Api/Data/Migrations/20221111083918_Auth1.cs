@@ -9,10 +9,6 @@ namespace OMT_Api.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Password",
-                table: "Employees");
-
             migrationBuilder.AlterColumn<byte[]>(
                 name: "PasswordSalt",
                 table: "Employees",
